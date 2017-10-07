@@ -1,8 +1,5 @@
-FROM ubuntu:16.04
+FROM easypi/shadowsocks-libev
 
-RUN apt-get install software-properties-common -y && \
-    add-apt-repository ppa:max-c-lv/shadowsocks-libev && \
-    apt-get update && \
-    apt install shadowsocks-libev
+ENV METHOD aes-256-cfb
 
-ENTRYPOINT ["systemctl start shadowsocks-libev"]
+ENV PASSWORD zaq12wsx
