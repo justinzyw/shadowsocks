@@ -1,38 +1,7 @@
-FROM alpine:latest
+FROM ubuntu:16.04
 
-RUN buildDeps=" \
-		asciidoc \
-		build-base \
-		curl \
-		libev-dev \
-		libsodium-dev \
-		linux-headers \
-		mbedtls-dev \
-		pcre-dev \
-		tar \
-		udns-dev \
-		xmlto \
-	"; \
-	set -x \
-	&& apk add --update --virtual .build-deps $buildDeps \
-	&& SS_VERSION=`curl "https://github.com/shadowsocks/shadowsocks-libev/releases/latest" | sed -n 's/^.*tag\/v\(.*\)".*/\1/p'` \
-	&& curl -SL "https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_VERSION/shadowsocks-libev-$SS_VERSION.tar.gz" -o ss.tar.gz \
-	&& mkdir -p /usr/src/ss \
-	&& tar -xf ss.tar.gz -C /usr/src/ss --strip-components=1 \
-	&& rm ss.tar.gz \
-	&& cd /usr/src/ss \
-	&& ./configure --disable-documentation \
-	&& make install \
-	&& cd / \
-	&& rm -fr /usr/src/ss \
-	&& runDeps="$( \
-		scanelf --needed --nobanner /usr/local/bin/ss-* \
-			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			| xargs -r apk info --installed \
-			| sort -u \
-		)" \
-	&& apk add --virtual .run-deps $runDeps \
-	&& apk del .build-deps \
-	&& rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    apt-get install -y python-pip libsodium18
+RUN pip install shadowsocks==3.1.0
 
-ENTRYPOINT ["/usr/local/bin/ss-server"]
+ENTRYPOINT ["/usr/local/bin/ssserver"]
