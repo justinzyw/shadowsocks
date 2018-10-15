@@ -1,4 +1,4 @@
-FROM easypi/shadowsocks-libev
+FROM easypi/shadowsocks-libev:3.2.0
 
 ENV METHOD aes-256-cfb
 
